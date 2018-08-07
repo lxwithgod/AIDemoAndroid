@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">AIDemo</string>
+    <string name="black">black</string>
+    <string name="title">人证对比</string>
+    <string name="title_ocr">ocr</string>
+    <string name="title_ocr_dect">text_dect</string>
+    <string name="title_name_entity">name_entity</string>
+
+    <string name="start_ocr">开始</string>
+    <string name="start_contrast">开始对比</string>
+    <string name="contrast">人脸对比</string>
+    <string name="ocr">OCR识别</string>
+    <string name="result">比对结果</string>
+    <string name="finish">完成</string>
+    <string name="config">参数设置</string>
+</resources>
