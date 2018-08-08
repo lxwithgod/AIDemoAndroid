@@ -31,9 +31,12 @@ import com.ai.demo.utils.CustomTools;
 import com.ai.demo.utils.TSF;
 import com.ai.demo.utils.ImageUtil;
 import com.ai.demo.utils.TfDect;
+import com.ai.demo.utils.TfTextDect;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static com.ai.demo.utils.AIDemoUtils.*;
 
@@ -57,12 +60,25 @@ public class ContrastOpencvActivity extends BaseActivity {
     private String faceHeightWith = "";
     private String idFaceHeightWith = "";
     private RenderScript renderScript = null;
+    private Executor executor = Executors.newSingleThreadExecutor();
+    private void initTensorFlowAndLoadModel() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    tsf = new TSF(getAssets());
+                    tfd = new TfDect(getAssets());
 
+                } catch (final Exception e) {
+                    throw new RuntimeException("Error initializing TensorFlow!", e);
+                }
+            }
+        });
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tsf = new TSF(getAssets());
-        tfd = new TfDect(getAssets());
+        initTensorFlowAndLoadModel();
 
         setContentView(R.layout.activity_contrast);
         ButtonCard = (CustomImageButton) ContrastOpencvActivity.this.findViewById(R.id.bt_card);

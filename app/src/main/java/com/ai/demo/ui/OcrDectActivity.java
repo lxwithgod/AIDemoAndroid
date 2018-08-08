@@ -34,6 +34,8 @@ import java.io.File;
 
 
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -57,13 +59,29 @@ public class OcrDectActivity extends BaseActivity {
     private static String CAMERAIMAGENAME = "image.jpg";
 
     private TfTextDect tfd = null;
+    private Executor executor = Executors.newSingleThreadExecutor();
+    private void initTensorFlowAndLoadModel() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    tfd = new TfTextDect(getAssets());
+
+                } catch (final Exception e) {
+                    throw new RuntimeException("Error initializing TensorFlow!", e);
+                }
+            }
+        });
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        tsf = new TSF(getAssets());
-        tfd = new TfTextDect(getAssets());
+//        tfd = new TfTextDect(getAssets());
+
+        initTensorFlowAndLoadModel();
 
 //
         setContentView(R.layout.activity_ocr_dect);

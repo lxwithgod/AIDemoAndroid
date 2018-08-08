@@ -29,6 +29,7 @@ import com.ai.demo.utils.BytesIMs;
 import com.ai.demo.utils.ConstantManager;
 import com.ai.demo.utils.CustomTools;
 import com.ai.demo.utils.ImageUtil;
+import com.ai.demo.utils.TfNameEntity;
 import com.ai.demo.utils.TfTextDect;
 import com.ai.demo.utils.TfTextRec;
 
@@ -38,6 +39,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -66,14 +69,28 @@ public class OcrActivity extends BaseActivity {
     //    private String OCR_IMG_HW = "";
     private float Threshold_ratio;
     private int Threshold_avg_pool_size;
+    private Executor executor = Executors.newSingleThreadExecutor();
 
+
+    private void initTensorFlowAndLoadModel() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    tfd = new TfTextDect(getAssets());
+                    ttr = new TfTextRec(getAssets());
+                } catch (final Exception e) {
+                    throw new RuntimeException("Error initializing TensorFlow!", e);
+                }
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        tfd = new TfTextDect(getAssets());
-        ttr = new TfTextRec(getAssets());
+        initTensorFlowAndLoadModel();
 
 //
         setContentView(R.layout.activity_ocr);

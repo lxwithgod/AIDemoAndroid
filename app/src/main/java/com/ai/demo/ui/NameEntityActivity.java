@@ -15,6 +15,9 @@ import com.ai.demo.utils.ConstantManager;
 import com.ai.demo.utils.CustomTools;
 import com.ai.demo.utils.TfNameEntity;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 
 /**
  * Created by lx on 18-4-10.
@@ -31,24 +34,36 @@ public class NameEntityActivity extends BaseActivity {
 
     private TextView textViewResult;
     TfNameEntity tdne = null;
+    private Executor executor = Executors.newSingleThreadExecutor();
+
+
+    private void initTensorFlowAndLoadModel() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    tdne = new TfNameEntity(NameEntityActivity.this.getAssets());
+                } catch (final Exception e) {
+                    throw new RuntimeException("Error initializing TensorFlow!", e);
+                }
+            }
+        });
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        tdne = new TfNameEntity(NameEntityActivity.this.getAssets());
-
-//
         setContentView(R.layout.activity_name_entity);
         textView = NameEntityActivity.this.findViewById(R.id.text_input);
         textViewResult = NameEntityActivity.this.findViewById(R.id.text_parser_result);
-//        textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 
         btClick = NameEntityActivity.this.findViewById(R.id.bt_ocr);
         progressDialog = findViewById(com.ai.cameralib.R.id.progressBar);
 
         setControlEnable(true);
+        initTensorFlowAndLoadModel();
 
         // 加载配置文件
 //        urlString.setIPAddress(this);
